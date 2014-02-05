@@ -1,4 +1,5 @@
 #!/usr/bin/ipython
+; -*- mode: python -*- 
 
 import sys
 import os
@@ -11,28 +12,10 @@ from Bio import SeqIO
 # fasta files with DNA sequences for proteins need to be in a directory that
 # is provided for the script.
 
-def get_arguments(argv):
-    if len(argv) == 0:
-        usage()
-        sys.exit(2)
-    inGroupsFile = None
-    dnaSeqDirectory = None
-    try:
-        opts, args = getopt.getopt(argv, "g:d:")
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-d':
-            dnaSeqDirectory = arg
-        elif opt == '-g':
-            inGroupsFile = arg
-    return (inGroupsFile, dnaSeqDirectory)
-
 def usage():
     print "MakeCoreGenomeAlignment.py\n \
-        -g <input groups file>\n \
-        -d <directory with fasta files of DNA sequences for proteins>"
+        <input groups file>\n \
+        <directory with fasta files of DNA sequences for proteins>"
 
 def read_groups_file(inFileName):
     """ Read in groups file and create dictionary of group name and proteins in
@@ -52,23 +35,30 @@ def make_unaligned_fasta(dnaDirectory, groupsDict):
     """ Reads through files in provided directory to find gene sequences that
     match the proteins in the groups dictionary"""
     !mkdir proteinAlignments
-    files = !ls dnaDirectory
+    files = !ls {dnaDirectory}
     seqRecordDict = {}
+    seqIDs = []
     for f in files:
         handle = open(dnaDirectory + f, 'r')
         for record in SeqIO.parse(handle, 'fasta'):
-            seqRecordDict[record.id] = record
+            seqRecordDict[record.id.split('|')[1]] = record
     for group in groupsDict:
         proteins = groupsDict[group]
-        out = open(group + '.fasta', 'w')
+        out = open('proteinAlignments/' + group + '.fasta', 'w')
         records = []
         for protein in proteins:
+            seqID = protein.split('|')[0]
+            if seqID not in seqIDs:
+                seqIDs.append(seqID)
+            protein = protein.split('|')[1]
             records.append(seqRecordDict[protein])
         SeqIO.write(records, out, 'fasta')
+    return seqIDs
+
 
 def align_gene_sequences(groupFastaDirectory):
     """ Use MAFFT to align gene sequences"""
-    files = !ls groupFastaDirectory
+    files = !ls {groupFastaDirectory}
     outfileList = []
     for infile in files:
         infile = groupFastaDirectory + infile
@@ -77,21 +67,23 @@ def align_gene_sequences(groupFastaDirectory):
         !mafft --globalpair --maxiterate 1000 --thread 8 {infile} > {outfile}
     return outfileList
 
-def concatenate_alignments(fileList):
+def concatenate_alignments(seqIDs, fileList):
     """ Using Biopython, concatenate alignments produced by MAFFT"""
     coreAlignment = AlignIO.read(fileList[0], 'fasta')
     for i in range(1, len(fileList)):
         align = AlignIO.read(fileList[i], 'fasta')
-        coreAlignment = coreAlignment + alignment
+        coreAlignment = coreAlignment + align
+    for i in range(len(seqIDs)):
+        coreAlignment[i].id = seqIDs[i]
     AlignIO.write(coreAlignment, "core_alignment.fasta", 'fasta')
 
-if None in get_arguments(sys.argv[1:]):
+if len(sys.argv) != 3:
     usage()
-    sys.exit(2)
-else:
-    inFileName, dnaDirectory = get_arguments(sys.argv[1:])
+
+inFileName = sys.argv[1]
+dnaDirectory = sys.argv[2]
 
 groupsDict = read_groups_file(inFileName)
-make_unaligned_fasta(dnaDirectory, groupsDict)
+seqIDs = make_unaligned_fasta(dnaDirectory, groupsDict)
 outfileList = align_gene_sequences('proteinAlignments/')
-concatenate_alignmnets(outfileList)
+concatenate_alignments(seqIDs, outfileList)
