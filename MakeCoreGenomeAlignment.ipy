@@ -4,6 +4,7 @@ import sys
 import os
 import getopt
 from Bio import AlignIO
+from Bio import SeqIO
 
 # This script makes a core genome alignment from proteins in a groups file in
 # the format output by OrthoMCL. FilterOrthoMCLGroups.py should be used first
@@ -50,6 +51,20 @@ def read_groups_file(inFileName):
 def make_unaligned_fasta(dnaDirectory, groupsDict):
     """ Reads through files in provided directory to find gene sequences that
     match the proteins in the groups dictionary"""
+    !mkdir proteinAlignments
+    files = !ls dnaDirectory
+    seqRecordDict = {}
+    for f in files:
+        handle = open(dnaDirectory + f, 'r')
+        for record in SeqIO.parse(handle, 'fasta'):
+            seqRecordDict[record.id] = record
+    for group in groupsDict:
+        proteins = groupsDict[group]
+        out = open(group + '.fasta', 'w')
+        records = []
+        for protein in proteins:
+            records.append(seqRecordDict[protein])
+        SeqIO.write(records, out, 'fasta')
 
 def align_gene_sequences(groupFastaDirectory):
     """ Use MAFFT to align gene sequences"""
@@ -77,3 +92,6 @@ else:
     inFileName, dnaDirectory = get_arguments(sys.argv[1:])
 
 groupsDict = read_groups_file(inFileName)
+make_unaligned_fasta(dnaDirectory, groupsDict)
+outfileList = align_gene_sequences('proteinAlignments/')
+concatenate_alignmnets(outfileList)
