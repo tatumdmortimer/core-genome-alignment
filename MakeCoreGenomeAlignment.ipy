@@ -3,6 +3,7 @@
 import sys
 import os
 import getopt
+from Bio import AlignIO
 
 # This script makes a core genome alignment from proteins in a groups file in
 # the format output by OrthoMCL. FilterOrthoMCLGroups.py should be used first
@@ -58,12 +59,16 @@ def align_gene_sequences(groupFastaDirectory):
         infile = groupFastaDirectory + infile
         outfile = os.path.splitext(infile)[0] + '_align.fasta'
         outfileList.append(outfile)
-        !mafft --globalpair --maxiterate 1000 {infile} > {outfile}
+        !mafft --globalpair --maxiterate 1000 --thread 8 {infile} > {outfile}
     return outfileList
 
 def concatenate_alignments(fileList):
     """ Using Biopython, concatenate alignments produced by MAFFT"""
-
+    coreAlignment = AlignIO.read(fileList[0], 'fasta')
+    for i in range(1, len(fileList)):
+        align = AlignIO.read(fileList[i], 'fasta')
+        coreAlignment = coreAlignment + alignment
+    AlignIO.write(coreAlignment, "core_alignment.fasta", 'fasta')
 
 if None in get_arguments(sys.argv[1:]):
     usage()
