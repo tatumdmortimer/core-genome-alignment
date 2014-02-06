@@ -67,6 +67,15 @@ def align_gene_sequences(groupFastaDirectory):
         !mafft --globalpair --maxiterate 1000 --thread 8 {infile} > {outfile}
     return outfileList
 
+def trim_alignments(fileList):
+    """ Use trimAl to trim gaps from input alignments"""
+    outfileList = []
+    for infile in fileList:
+        outfile = os.path.splitext(infile)[0] + '_trim.fasta'
+        outfileList.append(outfile)
+        !/opt/PepPrograms/trimal/source/trimal -in {infile} -out {outfile} -automated1
+    return outfileList
+
 def concatenate_alignments(seqIDs, fileList):
     """ Using Biopython, concatenate alignments produced by MAFFT"""
     coreAlignment = AlignIO.read(fileList[0], 'fasta')
@@ -85,5 +94,6 @@ dnaDirectory = sys.argv[2]
 
 groupsDict = read_groups_file(inFileName)
 seqIDs = make_unaligned_fasta(dnaDirectory, groupsDict)
-outfileList = align_gene_sequences('proteinAlignments/')
-concatenate_alignments(seqIDs, outfileList)
+alignList = align_gene_sequences('proteinAlignments/')
+trimList = trim_alignments(alignList)
+concatenate_alignments(seqIDs, trimList)
