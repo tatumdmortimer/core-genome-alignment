@@ -65,7 +65,7 @@ def write_file(inFileName, groupsDict, keepList):
     outFileName = os.path.splitext(inFileName)[0] + '_filter.txt'
     outFile = open(outFileName, 'w')
     for group in keepList:
-        outFile.write(group + ': ' + ' '.join(groupsDict[group]) + '\n')
+        outFile.write(group + ': ' + ' '.join(sorted(groupsDict[group])) + '\n')
     outFile.close()
 
 if None in get_arguments(sys.argv[1:]):
