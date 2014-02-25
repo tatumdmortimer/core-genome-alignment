@@ -1,0 +1,36 @@
+#!/usr/bin/ipython
+; -*- mode: python -*- 
+
+import sys
+import os
+
+# This script runs the annotations program Prokka on a directory of fasta format
+# genomes. Each genome will hava a directory as output. Additionally, a
+# directory containing protein sequences in fasta format for each genome will be
+# created as well as a directory containing the corresponding nucleotide seqs.
+
+def usage():
+    print "RunProkka.ipy\n \
+        <directory with fasta genomes>"
+
+if len(sys.argv) != 2:
+    usage()
+genomeDirectory = sys.argv[1]
+
+# make directories for protein and dna sequences if they don't already exist
+!mkdir -p dnaSeqs
+!mkdir -p proteinSeqs
+
+# run prokka for each genome in directory
+
+genomes = !ls {genomeDirectory}
+for genome in genomeDirectory:
+    prefix = os.path.splitext(genome)[0]
+    outdir = directory + prefix + '_annotation'
+    !prokka --outdir {outdir} --prefix {prefix} {genome}
+    !cp {outdir + '/' + prefix + '.faa'} proteinSeqs
+    !cp {outdir + '/' + prefix + '.ffn'} dnaSeqs
+
+
+    
+    
