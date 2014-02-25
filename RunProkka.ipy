@@ -24,10 +24,12 @@ genomeDirectory = sys.argv[1]
 # run prokka for each genome in directory
 
 genomes = !ls {genomeDirectory}
-for genome in genomeDirectory:
+for genome in genomes:
     prefix = os.path.splitext(genome)[0]
-    outdir = directory + prefix + '_annotation'
-    !prokka --outdir {outdir} --prefix {prefix} {genome}
+    print prefix
+    outdir = genomeDirectory + prefix + '_annotation'
+    print outdir
+    !prokka --outdir {outdir} --prefix {prefix} --locustag {prefix} {genomeDirectory + genome}
     !cp {outdir + '/' + prefix + '.faa'} proteinSeqs
     !cp {outdir + '/' + prefix + '.ffn'} dnaSeqs
 
