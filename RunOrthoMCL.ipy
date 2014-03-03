@@ -1,0 +1,62 @@
+#!/usr/bin/ipython
+; -*- mode: python -*- 
+
+import sys
+import os
+
+# This script runs the program OrthoMCL to put proteins from annotated genomes
+# into orthologous groups. A sql database must be created and empty for this
+# program to run correctly. Details of the database should be provided in the   
+# OrthoMCL config file. Additionally, the directory where the annotated proteins
+# are located should be provided to this script. Do not use relative paths.
+
+def usage():
+    print "RunOrthoMCL.ipy\n \
+        <directory with fasta protein annotations (absolute path)> \
+        <OrthoMCL config file>"
+
+def install_schema(config):
+    !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclInstallSchema {config} log.sql.txt
+
+def compliant_fasta(directory):
+    !mkdir -p compliantFASTA
+    !cd compliantFASTA
+    genomes = !ls {directory}
+    for genome in genomes:
+        prefix = os.path.splitext(genome)[0]
+        !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclAdjustFasta prefix[-4:] {directory + genome} 2
+
+def filter_fasta():
+    !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclFilterFasta . 10 20
+
+def allVSall_blast(config):
+    !makeblastdb -in ../compliantFASTA/goodProteins.fasta -dbtype prot -out coreDB
+    !blastp -db coreDB -query ../compliantFASTA/goodProteins.fasta -outfmt 6 -out allVSall.tsv -num_threads 8
+    !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclBlastParser allVSall.tsv ../compliantFASTA/ >> similarSequences.txt
+    !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclLoadBlast {config} similarSequences.txt
+
+def pairs(config):
+    !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclPairs {config} pairs.log cleanup=yes
+    !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclDumpPairsFiles {config}
+
+def mcl():
+    !mcl mclInput -abc -I 1.5 -o mclOutput
+    !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclMclToGroups core 1000 < mclOutput > groups.txt
+
+if len(sys.argv) != 3:
+    usage()
+proteinDirectory = sys.argv[1]
+configFile = sys.argv[2]
+install_schema(configFile)
+!mkdir -p compliantFASTA
+!cd compliantFASTA
+compliant_fasta(proteinDirectory)
+filter_fasta()
+!mkdir -p blast
+!cd blast
+allVSall_blast(configFile)
+!cd ..
+pairs(configFile)
+mcl()
+    
+    
