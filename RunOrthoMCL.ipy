@@ -24,7 +24,9 @@ def compliant_fasta(directory):
     genomes = !ls {directory}
     for genome in genomes:
         prefix = os.path.splitext(genome)[0]
-        !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclAdjustFasta prefix[-4:] {directory + genome} 2
+        if len(prefix) > 4:
+            prefix = prefix[-4:]
+        !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclAdjustFasta prefix {directory + genome} 2
 
 def filter_fasta():
     !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclFilterFasta . 10 20
