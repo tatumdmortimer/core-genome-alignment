@@ -19,14 +19,12 @@ def install_schema(config):
     !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclInstallSchema {config} log.sql.txt
 
 def compliant_fasta(directory):
-    !mkdir -p compliantFASTA
-    !cd compliantFASTA
     genomes = !ls {directory}
     for genome in genomes:
         prefix = os.path.splitext(genome)[0]
         if len(prefix) > 4:
             prefix = prefix[-4:]
-        !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclAdjustFasta prefix {directory + genome} 2
+        !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclAdjustFasta {prefix} {directory + genome} 1
 
 def filter_fasta():
     !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclFilterFasta . 10 20
@@ -42,7 +40,7 @@ def pairs(config):
     !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclDumpPairsFiles {config}
 
 def mcl():
-    !mcl mclInput -abc -I 1.5 -o mclOutput
+    !mcl mclInput --abc -I 1.5 -o mclOutput
     !/opt/PepPrograms/orthomclSoftware-v2.0.9/bin/orthomclMclToGroups core 1000 < mclOutput > groups.txt
 
 if len(sys.argv) != 3:
@@ -51,13 +49,14 @@ proteinDirectory = sys.argv[1]
 configFile = sys.argv[2]
 install_schema(configFile)
 !mkdir -p compliantFASTA
-!cd compliantFASTA
+os.chdir('compliantFASTA')
 compliant_fasta(proteinDirectory)
 filter_fasta()
+os.chdir('..')
 !mkdir -p blast
-!cd blast
+os.chdir('blast')
 allVSall_blast(configFile)
-!cd ..
+os.chdir('..')
 pairs(configFile)
 mcl()
     
