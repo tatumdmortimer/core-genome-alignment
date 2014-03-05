@@ -1,0 +1,27 @@
+#!/usr/bin/ipython
+; -*- mode: python -*- 
+
+import sys
+import re
+
+# This script produces maximum likelihood trees for a group of gene alignments
+# stored in a directory. The script is designed to use output from
+# MakeCoreGenomeAlignment.ipy, and it looks for alignments with file names
+# ending in _trim.fasta. The script uses RAxML for phylogenetic inference.
+# The scripts should run within directory containing gene alignments.
+
+def usage():
+    print "Usage: GeneMLTrees.ipy"
+
+def run_RAxML(inFileName):
+    outfile = re.sub("\D", "", inFileName)
+    !/opt/PepPrograms/standard-RAxML/raxmlHPC-PTHREADS-AVX -m GTRGAMMA -s {inFileName} -# 20 -n {outfile} -T 6 -p 123
+    !mv RAxML* geneMLtrees
+
+if len(sys.argv) != 1:
+    usage()
+    sys.exit(0)
+!mkdir -p geneMLtrees
+alignments = !ls *_trim.fasta
+for a in alignments:
+    run_RAxML(a)
