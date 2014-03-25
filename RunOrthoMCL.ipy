@@ -12,7 +12,7 @@ import os
 
 def usage():
     print "RunOrthoMCL.ipy\n \
-        <directory with fasta protein annotations (absolute path)> \
+        <directory with fasta protein annotations (absolute path)>\n \
         <OrthoMCL config file>"
 
 def install_schema(config):
@@ -45,6 +45,7 @@ def mcl():
 
 if len(sys.argv) != 3:
     usage()
+    sys.exit()
 proteinDirectory = sys.argv[1]
 configFile = sys.argv[2]
 install_schema(configFile)
