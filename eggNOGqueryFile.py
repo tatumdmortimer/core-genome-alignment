@@ -12,7 +12,7 @@ from Bio import SeqIO
 # eggNOGblast.py.                                                   
 
 def usage():
-    print "FilterOrthoMCLGroups.py <directory of .fasta protein sequences>"
+    print "eggNOGqueryFile.py <directory of .fasta protein sequences>"
 
 if len(sys.argv) != 2:
     usage()
