@@ -41,3 +41,55 @@ Requirements: IPython, Biopython, MAFFT, trimAl
 Current Versions: IPython v 0.13.1, Biopython v 1.63, MAFFT v 7.130b, trimAl v 1.3
 
 Usage: MakeCoreGenomeAlignment.ipy [input groups file] [directory with DNA sequences]
+
+###GeneMLTrees.ipy
+
+This script produces maximum likelihood trees for a group of gene alignments
+stored in a directory. The script is designed to use output from
+MakeCoreGenomeAlignment.ipy, and it looks for alignments with file names
+ending in _trim.fasta. The script uses RAxML for phylogenetic inference.
+The scripts should run within directory containing gene alignments
+
+Requirements: IPython, RAxML (https://github.com/stamatak/standard-RAxML)
+
+Current Versions: IPython 0.13.1, RAxML 8.0.6
+
+Usage: GeneMLTrees.ipy
+
+###eggNOGqueryFile.py
+
+This script takes the first protein from each file in a directory of unaligned
+fasta files and changes the protein ID to the name of the file. All protein  
+sequences are written to an output file that should be used as the query for
+eggNOGblast.py.
+
+Requirements: Biopython
+
+Current Versions: Python 2.7.3, Biopython v 1.63
+
+Usage: eggNOGqueryFile.py [directory of FASTA protein sequences]
+
+###eggNOGblast.py
+
+This script takes a file with fasta genes and uses NCBI BLAST+ to look for
+matches in the eggNOG BLAST database. It also uses eggNOG to assign functional
+categories to each fasta. Inputs are the directory where eggnog files are
+found and an input fasta.
+
+Requirements: Biopython, NCBI BLAST+ (http://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download), eggNOG files (http://eggnog.embl.de/version_4.0.beta/downloads.v4.html), BLAST database created from eggNOG proteins
+
+Current Versions: Python 2.7.3, Biopython 1.63, BLAST+ 2.2.18, eggNOG 4
+
+Usage: eggNOGblast.py -f [input fasta file] -e [directory with eggNOG files]
+
+###geneContentTree.py
+
+This script uses the orthologous groups output by OrthoMCL to create a    
+distance matrix between strains. A neighbor joining tree is created from this
+distance matrix.
+
+Requirements: Biopython
+
+Current Versions: Python 2.7.3, Biopython 1.64 (unreleased from https://github.com/biopython/biopython)
+
+Usage: geneContentTree.py -g [OrthoMCL groups file]
