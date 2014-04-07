@@ -60,11 +60,10 @@ def read_groups(groupsFile):
 
 def calc_dist(totalA, totalB, totalShared):
     distance = (totalA + totalB - 2.0*totalShared)/(totalA + totalB)
-    print distance
+    return distance
 
 def create_distance_matrix(strainList, strainDict):
     print "Calculating distance matrix"
-    print strainList
     matrix = []
     for i in range(1, len(strainList) + 1):
         matrix.append([0]*i)
