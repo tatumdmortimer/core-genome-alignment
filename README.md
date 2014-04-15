@@ -93,3 +93,13 @@ Requirements: Biopython
 Current Versions: Python 2.7.3, Biopython 1.64 (unreleased from https://github.com/biopython/biopython)
 
 Usage: geneContentTree.py -g [OrthoMCL groups file]
+
+###compareCoreGenomes.py
+
+This script used the orthologous groups output by OrthoMCL to create files
+describing the core genome and genes unique to the core genome of particular
+clades. 
+
+Current Versions: Python 2.7.3
+
+Usage: compareCoreGenomes.py -g [OrthoMCL groups file] -c [clades file]
