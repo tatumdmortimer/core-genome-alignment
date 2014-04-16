@@ -80,11 +80,17 @@ def get_core_genomes(groupsDict, catDict):
                     coreDict[cat].add(group)
     return coreDict
 
-def write_core_genomes(coreDict):
+def write_core_genomes(groupsDict, catDict, coreDict):
     for group in coreDict:
         outfile = open(group + "_coreGenes.txt", 'w')
         for gene in coreDict[group]:
-            outfile.write(gene + '\n')
+            proteinList = groupsDict[gene]
+            proteinsInCat = []
+            for protein in proteinList:
+                ids = protein.split('|')
+                if ids[0] in catDict[group]:
+                    proteinsInCat.append(protein)
+            outfile.write(gene + ': ' + ' '.join(sorted(proteinsInCat)) + '\n')
         outfile.close()
 
 def get_unique_genes(coreDict):
@@ -113,6 +119,6 @@ else:
 groupsDict = read_groups_file(inFileName)
 catDict = read_cat_file(genomeCatFile)
 coreDict = get_core_genomes(groupsDict, catDict)
-write_core_genomes(coreDict)
+write_core_genomes(groupsDict, catDict, coreDict)
 uniqueDict = get_unique_genes(coreDict)
 write_unique_genomes(uniqueDict)
