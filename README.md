@@ -98,7 +98,15 @@ Usage: geneContentTree.py -g [OrthoMCL groups file]
 
 This script used the orthologous groups output by OrthoMCL to create files
 describing the core genome and genes unique to the core genome of particular
-clades. 
+clades.
+
+Format of clade file:
+
+StrainA Clade1
+
+StrainB Clade1
+
+StrainC Clade2
 
 Current Versions: Python 2.7.3
 
