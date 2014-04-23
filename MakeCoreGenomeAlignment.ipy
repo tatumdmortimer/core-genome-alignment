@@ -41,7 +41,7 @@ def make_unaligned_fasta(dnaDirectory, groupsDict):
     for f in files:
         handle = open(dnaDirectory + f, 'r')
         for record in SeqIO.parse(handle, 'fasta'):
-            seqRecordDict[record.id.split('|')[1]] = record
+            seqRecordDict[record.id] = record
     for group in groupsDict:
         proteins = groupsDict[group]
         out = open('proteinAlignments/' + group + '.fasta', 'w')
