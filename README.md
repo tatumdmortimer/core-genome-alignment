@@ -94,6 +94,18 @@ Current Versions: Python 2.7.3, Biopython 1.64 (unreleased from https://github.c
 
 Usage: geneContentTree.py -g [OrthoMCL groups file]
 
+###geneContentMatrix.py
+
+This script uses the orthologous groups output by OrthoMCL to create a
+matrix of gene content for each genome in the analysis. Each row in the
+matrix is an orthologous group, and each column is a genome. The numbers
+correspond to the number of members of the group contained within each
+genome.
+
+Current Versions: Python 2.7.3
+
+Usage: geneContentMatrix.py -g [OrthoMCL groups file]
+
 ###compareCoreGenomes.py
 
 This script used the orthologous groups output by OrthoMCL to create files
