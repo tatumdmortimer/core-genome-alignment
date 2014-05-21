@@ -64,8 +64,10 @@ def read_cat_file(genomeCatFile):
 def get_core_genomes(groupsDict, catDict):
     """ Gets core genome for each category """ 
     coreDict = {}
+    allDict = {} # holds genes present in category, but not shared in all
     for cat in catDict:
         coreDict[cat] = set()
+        allDict[cat] = set()
     for group in groupsDict:
         genomeList = []
         proteinList = groupsDict[group]
@@ -74,11 +76,13 @@ def get_core_genomes(groupsDict, catDict):
             genomeID = ids[0]
             genomeList.append(genomeID)
         genomeSet = set(genomeList)    # create set to check for duplicates
-        if len(genomeList) == len(genomeSet):
-            for cat in catDict:
-                if catDict[cat].issubset(genomeSet):
+        for cat in catDict:
+            if catDict[cat].issubset(genomeSet):
+                if len(genomeList) == len(genomeSet):
                     coreDict[cat].add(group)
-    return coreDict
+            if len(catDict[cat] & genomeSet) > 0:
+                allDict[cat].add(group)
+    return coreDict, allDict
 
 def write_core_genomes(groupsDict, catDict, coreDict):
     for group in coreDict:
@@ -93,13 +97,13 @@ def write_core_genomes(groupsDict, catDict, coreDict):
             outfile.write(gene + ': ' + ' '.join(sorted(proteinsInCat)) + '\n')
         outfile.close()
 
-def get_unique_genes(coreDict):
+def get_unique_genes(coreDict, dupDict):
     uniqueDict = {}
     for group in coreDict:
-        unique = coreDict[group]
+        unique = coreDict[group].copy()
         for otherGroup in coreDict:
             if otherGroup != group:
-                unique -= coreDict[otherGroup]
+                unique -= allDict[otherGroup]
         uniqueDict[group] = unique
     return uniqueDict
 
@@ -118,7 +122,7 @@ else:
 
 groupsDict = read_groups_file(inFileName)
 catDict = read_cat_file(genomeCatFile)
-coreDict = get_core_genomes(groupsDict, catDict)
+coreDict, allDict = get_core_genomes(groupsDict, catDict)
 write_core_genomes(groupsDict, catDict, coreDict)
-uniqueDict = get_unique_genes(coreDict)
+uniqueDict = get_unique_genes(coreDict, allDict)
 write_unique_genomes(uniqueDict)
