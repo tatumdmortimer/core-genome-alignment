@@ -11,8 +11,8 @@ library(reshape2)
 # Read data from file provided by user
 args <- commandArgs(trailingOnly = TRUE)
 data <- read.table(args[1])
-d <- data[,c(1,2,3)]
-m <- acast(d, V2~V1, value.var="V3")
+d <- data[,c(1,2,4)]
+m <- acast(d, V2~V1, value.var="V4")
 dmatrix <- as.dist(m)
 fit <- cmdscale(dmatrix, eig=TRUE, k=2)
 x <- fit$points[,1]
