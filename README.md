@@ -56,6 +56,15 @@ Current Versions: IPython 0.13.1, RAxML 8.0.6
 
 Usage: GeneMLTrees.ipy
 
+###mdsRFdistance.R
+
+This script produces a plot of multidimensional scaling of Robinson-Foulds
+distances produced by RAxML.
+
+Requirements: ggplot2, reshape2
+
+Usage: mdsRFdistance.R [input file]
+
 ###eggNOGqueryFile.py
 
 This script takes the first protein from each file in a directory of unaligned
