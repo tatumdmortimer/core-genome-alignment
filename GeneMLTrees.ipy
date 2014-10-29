@@ -22,6 +22,6 @@ if len(sys.argv) != 1:
     usage()
     sys.exit(0)
 !mkdir -p geneMLtrees
-alignments = !ls *_trim.fasta
+alignments = !ls *.fasta
 for a in alignments:
     run_RAxML(a)
