@@ -1,0 +1,27 @@
+#!/usr/bin/ipython
+; -*- mode: python -*- 
+
+import sys
+import re
+
+# This script produces maximum likelihood trees for a group of gene alignments
+# stored in a directory. GeneMLTrees.ipy should be run first.
+# ending in _trim.fasta. The script uses RAxML for phylogenetic inference.
+# The scripts should run within directory containing gene alignments.
+
+def usage():
+    print "Usage: GeneMLBootstrap.ipy"
+
+def run_RAxML(inFileName):
+    outfile = re.sub("\D", "", inFileName)
+    !/opt/PepPrograms/standard-RAxML/raxmlHPC-PTHREADS-AVX -m GTRGAMMA -s {inFileName} -N autoMR -n {outfile}_bootstrap -T 6 -p 123 -b 123
+    !/opt/PepPrograms/standard-RAxML/raxmlHPC-PTHREADS-AVX -T 6 -m GTRGAMMA -s {inFileName} -f b -t geneMLtrees/RAxML_bestTree.{outfile} -z RAxML_bootstrap.{outfile}_bootstrap -n {outfile}_bipartition
+    !mv RAxML* geneMLtrees
+
+if len(sys.argv) != 1:
+    usage()
+    sys.exit(0)
+!mkdir -p geneMLtrees
+alignments = !ls *.fasta
+for a in alignments:
+    run_RAxML(a)
