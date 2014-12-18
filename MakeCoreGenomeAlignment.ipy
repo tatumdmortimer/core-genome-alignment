@@ -67,6 +67,18 @@ def align_gene_sequences(groupFastaDirectory):
         !mafft --globalpair --maxiterate 1000 --thread 8 {infile} > {outfile}
     return outfileList
 
+def align_codons(groupFastaDirectory):
+    """ Use translatorX with MAFFT to align and trim sequences"""
+    files = !ls {groupFastaDirectory}
+    outfileList = []
+    for infile in files:
+        infile = groupFastaDirectory + infile
+        print infile
+        outfile = os.path.splitext(infile)[0] 
+        outfileList.append(outfile + ".nt_ali.fasta")
+        !/opt/PepPrograms/translatorx_vLocal.pl -i {infile} -o {outfile} -p F 
+    return outfileList
+
 def trim_alignments(fileList):
     """ Use trimAl to trim gaps from input alignments"""
     outfileList = []
@@ -97,4 +109,4 @@ groupsDict = read_groups_file(inFileName)
 seqIDs = make_unaligned_fasta(dnaDirectory, groupsDict)
 alignList = align_gene_sequences('proteinAlignments/')
 trimList = trim_alignments(alignList)
-concatenate_alignments(seqIDs, trimList)
+concatenate_alignments(seqIDs, alignList)
