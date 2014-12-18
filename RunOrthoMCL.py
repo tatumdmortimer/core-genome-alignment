@@ -1,9 +1,7 @@
 #!/usr/bin/python
 
 import sys, os, subprocess, shlex, glob, argparse
-import MySQLdb as mdb
 from datetime import datetime
-from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
 ################################################################################
