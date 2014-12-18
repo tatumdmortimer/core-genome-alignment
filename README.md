@@ -12,19 +12,19 @@ Current Versions: IPython v 0.13.1, Prokka v 1.7
 
 Usage: RunProkka.ipy [fasta directory]
 
-###RunOrthoMCL.ipy
+###RunOrthoMCL.py
 
 This script runs the program OrthoMCL to put proteins from annotated genomes
 into orthologous groups. A sql database must be created and empty for this
 program to run correctly. Details of the database should be provided in the   
 OrthoMCL config file. Additionally, the directory where the annotated proteins
-are located should be provided to this script. Do not use relative paths.
+are located should be provided to this script.
 
-Requirements: IPython, OrthoMCL (http://orthomcl.org/orthomcl/)
+Requirements: OrthoMCL (http://orthomcl.org/orthomcl/)
 
-Current Versions: IPython v 0.13.1, OrthoMCL v 2.0.9
+Current Versions: Python 2.7.3, OrthoMCL v 2.0.9
 
-Usage: RunOrthoMCL.ipy [protein fasta directory] [OrthoMCL config file]
+Usage: RunOrthoMCL.py -t [# of threads] [OrthoMCL config file] [directory of proteins]
 
 ###FilterOrthoMCLGroups.py
 
@@ -32,15 +32,15 @@ This script filters protein groups output from OrthoMCL and returns those that c
 
 Usage: FilterOrthoMCLGroups.py -g [input groups file] -n [number of genomes]
 
-###MakeCoreGenomeAlignment.ipy
+###coreGenomeAlignment.py
 
-This script makes a core genome alignment from proteins in a groups file in the format output by OrthoMCL. FilterOrthoMCLGroups.py should be used first. The script should be provided with fasta files of DNA sequences for proteins located in one directory.
+This script makes a core genome alignment from proteins in a groups file in the format output by OrthoMCL. FilterOrthoMCLGroups.py should be used first. The script should be provided with fasta files of DNA or amino acid sequences for proteins located in one directory.
 
-Requirements: IPython, Biopython, MAFFT, trimAl
+Requirements: Biopython, MAFFT, trimAl(http://trimal.cgenomics.org/), translatorX (http://www.translatorx.co.uk/)
 
-Current Versions: IPython v 0.13.1, Biopython v 1.63, MAFFT v 7.130b, trimAl v 1.3
+Current Versions: Python 2.7.3, Biopython v 1.63, MAFFT v 7.130b, trimAl v 1.3
 
-Usage: MakeCoreGenomeAlignment.ipy [input groups file] [directory with DNA sequences]
+Usage: coreGenomeAlignment.py -t [# of threads] [input groups file] [directory with sequences]
 
 ###GeneMLTrees.ipy
 
