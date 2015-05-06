@@ -2,33 +2,31 @@
 
 import sys
 import os
-import getopt
+import argparse
 
 # This script filters protein groups output from OrthoMCL and compares the core
 # genomes of groups input by the user
 
-def get_arguments(argv):
-    if len(argv) == 0:
-        usage()
-        sys.exit(2)
-    inGroupsFile = None
-    genomeCatFile = None
-    try:
-        opts, args = getopt.getopt(argv, "g:c:")
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-c':
-            genomeCatFile = arg
-        elif opt == '-g':
-            inGroupsFile = arg
-    return (inGroupsFile, genomeCatFile)
+def is_file(filename):
+    """Checks if a file exists"""
+    if not os.path.isfile(filename):
+        msg = "{0} is not a file".format(filename)
+        raise argparse.ArgumentTypeError(msg)
+    else:
+        return filename
 
-def usage():
-    print "compareCoreGenomes.py\n \
-        -g <input groups file>\n \
-        -c <input genome categories file"
+
+def get_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(description='Compare core genomes')
+    parser.add_argument("groups", help="OrthoMCL groups output", type=is_file)
+    parser.add_argument("categories", help="File describing genome categories",
+        type=is_file)
+    parser.add_argument("-n", "--number", help="Number of genomes in a \
+category allowed to not have a gene (default: 0)", type=int, default=0)
+    parser.add_argument("-d", "--duplicates", help="Allow duplicate genes in \
+one genome", action='store_true')
+    return parser.parse_args()
 
 def read_groups_file(inFileName):
     """ Read in groups file and create dictionary of group name and proteins in
@@ -61,7 +59,7 @@ def read_cat_file(genomeCatFile):
     inFile.close()
     return catDict
 
-def get_core_genomes(groupsDict, catDict):
+def get_core_genomes(groupsDict, catDict, number, duplicates):
     """ Gets core genome for each category """ 
     coreDict = {}
     allDict = {} # holds genes present in category, but not shared in all
@@ -77,8 +75,10 @@ def get_core_genomes(groupsDict, catDict):
             genomeList.append(genomeID)
         genomeSet = set(genomeList)    # create set to check for duplicates
         for cat in catDict:
-            if catDict[cat].issubset(genomeSet):
-                if len(genomeList) == len(genomeSet):
+            if len(catDict[cat] - genomeSet) <= number:
+                if duplicates:
+                    coreDict[cat].add(group)
+                elif len(genomeList) == len(genomeSet):
                     coreDict[cat].add(group)
             if len(catDict[cat] & genomeSet) > 0:
                 allDict[cat].add(group)
@@ -114,15 +114,12 @@ def write_unique_genomes(uniqueDict):
             outfile.write(gene + '\n')
         outfile.close()
 
-if None in get_arguments(sys.argv[1:]):
-    usage()
-    sys.exit(2)
-else:
-    inFileName, genomeCatFile = get_arguments(sys.argv[1:])
+args = get_args()
 
-groupsDict = read_groups_file(inFileName)
-catDict = read_cat_file(genomeCatFile)
-coreDict, allDict = get_core_genomes(groupsDict, catDict)
+groupsDict = read_groups_file(args.groups)
+catDict = read_cat_file(args.categories)
+coreDict, allDict = get_core_genomes(groupsDict, catDict, args.number,
+args.duplicates)
 write_core_genomes(groupsDict, catDict, coreDict)
 uniqueDict = get_unique_genes(coreDict, allDict)
 write_unique_genomes(uniqueDict)
