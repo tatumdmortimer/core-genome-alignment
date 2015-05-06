@@ -131,4 +131,8 @@ StrainC Clade2
 
 Current Versions: Python 2.7.3
 
-Usage: compareCoreGenomes.py -g [OrthoMCL groups file] -c [clades file]
+Usage: compareCoreGenomes.py [-n number] [-d] groups categories
+
+-n number of genomes that can be missing a genome to be considered a core gene (default = 0)
+
+-d allow duplicates of a gene within a genome
