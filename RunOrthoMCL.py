@@ -77,7 +77,7 @@ def install_schema(config):
 
 def compliant_fasta(directory):
     def edit_fasta(fasta_file):
-        prefix = os.path.splitext(fasta_file)[0]
+        prefix = os.path.splitext(os.path.basename(fasta_file))[0]
         if len(prefix) > 4:
             prefix = prefix[-4:]
         call_with_log(ORTHOMCL_PATH + 
