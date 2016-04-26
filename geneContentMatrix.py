@@ -41,7 +41,7 @@ def read_groups(groupsFile):
         groupDict[groupName] = []
         groupProteins = entries[1][1:].split(' ')
         for protein in groupProteins:
-            strain = re.findall(r"[a-zA-Z0-9]+", protein)[1]
+            strain = re.findall(r"[a-zA-Z0-9]+", protein)[0]
             groupDict[groupName].append(strain)
             if strain not in strainList:
                 strainList.append(strain)
