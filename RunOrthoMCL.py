@@ -7,7 +7,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 ################################################################################
 # This script runs the program OrthoMCL to put proteins from annotated genomes
 # into orthologous groups. A sql database must be created and empty for this
-# program to run correctly. Details of the database should be provided in the   
+# program to run correctly. Details of the database should be provided in the
 # OrthoMCL config file. Additionally, the directory where the annotated proteins
 # are located should be provided to this script. Do not use relative paths.
 ################################################################################
@@ -44,10 +44,10 @@ def get_args():
     parser = argparse.ArgumentParser(description='Run OrthoMCL pipeline')
     parser.add_argument("config", help="OrthoMCL config file", action=FullPaths,
         type=is_file)
-    parser.add_argument("proteins", 
+    parser.add_argument("proteins",
         help="Directory with .faa files of proteins for each genome",
         action=FullPaths, type=is_dir)
-    parser.add_argument("-t", "--threads", 
+    parser.add_argument("-t", "--threads",
         help="Number of threads to use (default: 1)",
         type=int, default=1)
     return parser.parse_args()
@@ -62,7 +62,7 @@ def call_with_log(cmd):
     logfile.flush()
     ret = subprocess.call(shlex.split(cmd), stdout=logfile, stderr=logfile)
     if(ret != 0):
-        print("Pipeline did not complete successfully. \n Command : \n\n" + 
+        print("Pipeline did not complete successfully. \n Command : \n\n" +
             cmd + "\n\n returned with non-zero code: " + str(ret))
         logfile.write("Pipeline did not complete successfully.\nCommand :\n\n" +
             cmd + "\n\n returned with non-zero code: " + str(ret))
@@ -80,7 +80,7 @@ def compliant_fasta(directory):
         prefix = os.path.splitext(os.path.basename(fasta_file))[0]
         if len(prefix) > 4:
             prefix = prefix[-4:]
-        call_with_log(ORTHOMCL_PATH + 
+        call_with_log(ORTHOMCL_PATH +
         "orthomclAdjustFasta %s %s 1" % (prefix, fasta_file))
         return prefix
 
@@ -91,7 +91,7 @@ def compliant_fasta(directory):
     pool.close()
     pool.join()
     dups = set([x for x in prefixes if prefixes.count(x) > 1])
-    if len(dups) > 1:
+    if len(dups) > 0:
         print ("WARNING: duplicate prefixes")
 
 def filter_fasta():
@@ -114,14 +114,14 @@ def allVSall_blast(config):
     prot -out coreDB")
     call_with_log("blastp -db coreDB -query ../goodProteins.fasta \
 -outfmt 6 -out allVSall.tsv -num_threads %i" % args.threads)
-    call_blast_parser(ORTHOMCL_PATH + 
+    call_blast_parser(ORTHOMCL_PATH +
 "orthomclBlastParser allVSall.tsv ../compliantFASTA/", "similarSequences.txt")
     call_with_log(ORTHOMCL_PATH + "orthomclLoadBlast %s similarSequences.txt"
          % config)
 
 def pairs(config):
     print "Performing pairs step"
-    call_with_log(ORTHOMCL_PATH + "orthomclPairs %s pairs.log cleanup=yes" % 
+    call_with_log(ORTHOMCL_PATH + "orthomclPairs %s pairs.log cleanup=yes" %
         config)
     call_with_log(ORTHOMCL_PATH + "orthomclDumpPairsFiles %s" % config)
 
@@ -141,11 +141,11 @@ def call_groups_log(cmd, infilename, outfilename):
 def mcl():
     print "Running mcl"
     call_with_log("mcl mclInput --abc -I 1.5 -o mclOutput")
-    call_groups_log(ORTHOMCL_PATH + "orthomclMclToGroups core 1000", 
+    call_groups_log(ORTHOMCL_PATH + "orthomclMclToGroups core 1000",
         "mclOutput", "groups.txt")
 
 
-args = get_args()  
+args = get_args()
 current_datetime = datetime.today().strftime("%d-%m-%Y-%H%M")
 orthomcl_wd = os.getcwd() + "/"
 kvmap = {'projectname':'orthomcl'}
@@ -170,4 +170,4 @@ allVSall_blast(args.config)
 os.chdir('..')
 pairs(args.config)
 mcl()
-    
+
