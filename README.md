@@ -1,7 +1,18 @@
 core-genome-alignment
 =====================
 
-Scripts to make a concatenated alignment of core genes from bacterial genomes.
+Scripts to make a concatenated alignment of core genes from bacterial genomes and compare gene content.
+
+Scripts from this repository have been used in the following manuscripts:
+
+Mortimer TD, Weber AM, Pepperell CS. 2016. Evolutionary thrift: mycobacteria repurpose plasmid diversity during adaptation of type VII secretion systems. bioRxiv:67207.
+
+Dang UJ, Devault AM, Mortimer TD, Pepperell CS, Poinar HN, Golding GB. 2016. Estimation of Gene Insertion/Deletion Rates with Missing Data. Genetics:genetics.116.191973.
+
+Shapiro LR, Scully ED, Straub TJ, Park J, Stephenson AG, Beattie GA, Gleason ML, Kolter R, Coelho MC, Moraes CMD, et al. 2016. Horizontal Gene Acquisitions, Mobile Element Proliferation, and Genome Decay in the Host-Restricted Plant Pathogen Erwinia Tracheiphila. Genome Biol Evol 8:649–664.
+
+O’Neill MB, Mortimer TD, Pepperell CS. 2015. Diversity of Mycobacterium tuberculosis across Evolutionary Scales. PLoS Pathog 11:e1005257.
+
 
 ###RunProkka.ipy
 This script runs the annotations program Prokka on a directory of fasta format genomes. Each genome will hava a directory as output. Additionally, a directory containing protein sequences in fasta format for each genome will be created as well as a directory containing the corresponding nucleotide sequences.
